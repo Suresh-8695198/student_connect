@@ -110,14 +110,6 @@ msgpack==1.1.0
 multidict==6.1.0
 murmurhash==1.0.10
 mysqlclient==2.2.1
-namex==0.0.8
-narwhals==1.33.0
-nbclient==0.10.2
-nbconvert==7.16.4
-nbformat==5.10.4
-nest-asyncio==1.6.0
-networkx==3.4.2
-nltk==3.9.1
 noisereduce==3.0.3
 notebook_shim==0.2.4
 numba==0.60.0
@@ -162,9 +154,6 @@ tiktoken==0.8.0
 tinycss2==1.4.0
 tinyhtml5==2.0.0
 tokenizers==0.20.3
-toml==0.10.2
-torch==2.5.1
-tornado==6.4.2
 tqdm==4.67.0
 traitlets==5.14.3
 transformers==4.46.3
