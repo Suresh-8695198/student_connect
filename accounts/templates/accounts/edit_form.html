@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+ 
+   
+   <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: #6a2b8e;
+            cursor: pointer;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-header h2 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #4A4A4A;
+        }
+
+        .profile-header p {
+            font-size: 18px;
+            color: #777;
+        }
+
+        .profile-photo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-photo img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #6a2b8e;
+            margin-bottom: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-photo img:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-photo p {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .profile-photo .degree {
+            font-size: 16px;
+            color: #777;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            color: #333;
+            margin-top: 0.5rem;
+        }
+
+        .status-icon {
+            margin-right: 8px;
+            font-size: 18px;
+            color: #fff;
+            padding: 4px;
+            border-radius: 50%;
+        }
+
+        .status-alumni {
+            background-color: #28a745;
+        }
+
+        .status-student {
+            background-color: #007bff;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .profile-info div {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .profile-info h3 {
+            font-size: 20px;
+            margin-bottom: 1rem;
+            color: #6a2b8e;
+            display: inline-block;
+        }
+
+        .profile-info .edit-icon {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            color: #6a2b8e;
+            cursor: pointer;
+        }
+
+        .profile-info p {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .edit-button {
+            display: block;
+            margin: 2rem auto 0;
+            padding: 0.5rem 2rem;
+            background-color: #6a2b8e;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-button:hover {
+            background-color: #5a1d78;
+        }
+
+        .profile-footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50%); }
+            to { transform: translateY(0); }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input, textarea {
+            width: 95%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .modal-body {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+            }
+
+            .profile-info {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-info div {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="javascript:history.back()" class="back-button"><i class="fas fa-arrow-left"></i></a>
+        
+        <div class="profile-header">
+            <h2>Your Profile</h2>
+            <p>Welcome, here are your profile details:</p>
+        </div>
+
+        <div class="profile-photo">
+            {% if profile.profile_photo %}
+                <img id="profilePhoto" src="{{ profile.profile_photo }}" alt="Profile Photo" onclick="openEditModal('photo')">
+            {% else %}
+                <img id="profilePhoto" src="https://res.cloudinary.com/dfowgh13y/image/upload/v1736879146/ixweh8lqbvl3y2igb0ua.jpg" alt="Default Profile Photo" onclick="openEditModal('photo')">
+            {% endif %}
+            <p>{{ profile.first_name }} {{ profile.last_name }}</p>
+            <p class="degree">{{ alumni.degree }}</p>
+            <div class="status">
+                {% if alumni.status == 'Alumni' %}
+                    <span class="status-icon status-alumni"><i class="fas fa-graduation-cap"></i></span> Alumni
+                {% else %}
+                    <span class="status-icon status-student"><i class="fas fa-user-graduate"></i></span> Student
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="profile-info">
+            <!-- Personal Information Section -->
+            <div>
+                <h3>
+                    Personal Information
+                    <i class="fas fa-edit edit-icon" onclick="openEditModal('personal')"></i>
+                </h3>
+                <p><strong>First Name:</strong> {{ profile.first_name }}</p>
+                <p><strong>Last Name:</strong> {{ profile.last_name }}</p>
+                <p><strong>Date of Birth:</strong> {{ profile.dob }}</p>
+                <p><strong>Phone Number:</strong> {{ profile.phone_no }}</p>
+                <p><strong>District:</strong> {{ profile.home_district }}</p>
+                <p><strong>State:</strong> {{ profile.home_state }}</p>
+                <p><strong>Country:</strong> {{ profile.home_country }}</p>
+                <p><strong>Current Job:</strong> {{ profile.current_job }}</p>
+                <p><strong>Current Working Company:</strong> {{ profile.current_company }}</p>
+                <p><strong>Current Working Company District:</strong> {{ profile.company_district }}</p>
+                <p><strong>Current Working Company State:</strong> {{ profile.company_state }}</p>
+                <p><strong>Current Working Company Country:</strong> {{ profile.company_country }}</p>
+                <p><strong>Skills:</strong> {{ profile.skills }}</p>
+                <p><strong>About:</strong> {{ profile.about }}</p>
+            </div>
+
+            <!-- Academic Information Section -->
+            <div>
+                <h3>
+                    Academic Information
+                    <i class="fas fa-edit edit-icon" onclick="openEditModal('academic')"></i>
+                </h3>
+                <p><strong>Admission Year:</strong> {{ profile.admissionYear }}</p>
+                <p><strong>Degree:</strong> {{ alumni.degree }}</p>
+                <p><strong>Department:</strong> {{ alumni.department }}</p>
+                <p><strong>Graduation Year:</strong> {{ alumni.graduationYear }}</p>
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <h2>Edit Profile</h2>
+                <form id="editForm" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="section" id="section">
+                    
+                    <!-- Modal Body with Scroll -->
+                    <div class="modal-body">
+                        <!-- Photo Edit -->
+                        <div id="photoFields" style="display: none;">
+                            <label for="profile_photo">Upload New Photo:</label>
+                            <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
+                        </div>
+
+                        <!-- Personal Fields -->
+                        <div id="personalFields" style="display: none;">
+                            <label for="first_name">First Name:</label>
+                            <input type="text" id="first_name" name="first_name" value="{{ profile.first_name }}">
+
+                            <label for="last_name">Last Name:</label>
+                            <input type="text" id="last_name" name="last_name" value="{{ profile.last_name }}">
+
+                            <label for="dob">Date of Birth:</label>
+                            <input type="date" id="dob" name="dob" value="{{ profile.dob }}">
+
+                            <label for="phone_no">Phone Number:</label>
+                            <input type="text" id="phone_no" name="phone_no" value="{{ profile.phone_no }}">
+
+                            <label for="home_district">District:</label>
+                            <input type="text" id="home_district" name="home_district" value="{{ profile.home_district }}">
+                            <label for="home_state">State:</label>
+                            <input type="text" id="home_state" name="home_state" value="{{ profile.home_state }}">
+                            <label for="home_country">Country:</label>
+                            <input type="text" id="home_country" name="home_country" value="{{ profile.home_country }}">
+                            
+                            <label for="current_job">Current Job:</label>
+                            <input type="text" id="current_job" name="current_job" value="{{ profile.current_job }}">
+
+                            <label for="current_company">Current Company:</label>
+                            <input type="text" id="current_company" name="current_company" value="{{ profile.current_company }}">
+
+                            <label for="company_district">Current Working Company District:</label>
+                            <input type="text" id="company_district" name="company_district" value="{{ profile.company_district }}">
+                            <label for="company_state">Current Working Company State:</label>
+                            <input type="text" id="company_state" name="company_state" value="{{ profile.company_state }}">
+                            <label for="company_country">Current Working Company Country:</label>
+                            <input type="text" id="company_country" name="company_country" value="{{ profile.company_country }}">
+                            <label for="skills">Skills:</label>
+                            <input type="text" id="skills" name="skills" value="{{ profile.skills }}">
+
+                            <label for="about">About:</label>
+                            <textarea id="about" name="about">{{ profile.about }}</textarea>
+                        </div>
+
+                        <!-- Academic Fields -->
+                        <div id="academicFields" style="display: none;">
+                            <label for="admissionYear">Admission Year:</label>
+                            <input type="number" id="admissionYear" name="admissionYear" value="{{ profile.admissionYear }}">
+
+                            <label for="degree">Degree: (readonly)</label>
+                            <input type="text" id="degree" name="degree" value="{{ alumni.degree }}" readonly>
+
+                            <label for="department">Department: (readonly)</label>
+                            <input type="text" id="department" name="department" value="{{ alumni.department }}" readonly>
+
+                            <label for="graduationYear">Graduation Year: (readonly)</label>
+                            <input type="number" id="graduationYear" name="graduationYear" value="{{ alumni.graduationYear }}" readonly>
+
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(section) {
+            document.getElementById("editModal").style.display = "block";
+            document.getElementById("section").value = section;
+
+            if (section === "personal") {
+                document.getElementById("personalFields").style.display = "block";
+                document.getElementById("academicFields").style.display = "none";
+                document.getElementById("photoFields").style.display = "none";
+            } else if (section === "academic") {
+                document.getElementById("academicFields").style.display = "block";
+                document.getElementById("personalFields").style.display = "none";
+                document.getElementById("photoFields").style.display = "none";
+            } else if (section === "photo") {
+                document.getElementById("photoFields").style.display = "block";
+                document.getElementById("personalFields").style.display = "none";
+                document.getElementById("academicFields").style.display = "none";
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("editModal")) {
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+</html>

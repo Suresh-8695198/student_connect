@@ -1,0 +1,315 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alumni Directory{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/2/2.0.3/iconify.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 110vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .directory-box {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .directory-box h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #6a2b8e, #4d2171);
+            background-clip: text;
+            color: transparent;
+        }
+
+        .directory-box .categories {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .directory-box .category {
+            flex: 1;
+            max-width: 200px;
+            padding: 20px;
+            background: linear-gradient(120deg, #6a2b8e, #c94dff);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1s ease;
+            cursor: pointer;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .directory-box .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .directory-box .category h3 {
+            margin: 10px 0 5px;
+        }
+
+        .directory-box .category span {
+            font-size: 28px;
+            font-weight: bold;
+        }
+    /* Search Filters Container */
+    .search-filters {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    /* Search Container */
+    .search-container {
+        display: flex;
+        align-items: center; /* Align icon and input vertically */
+        width: 95%; /* Takes up 95% of its parent container's width */
+        max-width: 800px; /* Limits the width to avoid being too wide */
+        border: 1px solid #ddd; /* Light border around the container */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        transition: box-shadow 0.3s; /* Smooth transition for shadow */
+        background-color: #fff; /* White background */
+        overflow: hidden; /* Ensures content stays within the rounded corners */
+    }
+
+    /* Search Icon */
+    .search-icon {
+        padding: 0 15px; /* Padding around the icon */
+        color: #aaa; /* Light gray color */
+        font-size: 20px; /* Icon size */
+    }
+
+    /* Search Input */
+    #search-input {
+        flex: 1; /* Takes up remaining space in the container */
+        padding: 15px 20px 15px 10px; /* Increased right-side padding */
+        font-size: 16px; /* Font size */
+        border: none; /* Removes default border */
+        outline: none; /* Removes outline on focus */
+        border-radius: 0 8px 8px 0; /* Rounded corners only on the right */
+        min-width: 0; /* Prevents overflow in small containers */
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .search-container {
+            width: 100%; /* Adjust to full width on smaller screens */
+        }
+
+        .search-icon {
+            font-size: 18px; /* Slightly smaller icon size */
+        }
+
+        #search-input {
+            padding: 12px 18px 12px 8px; /* Adjusted padding for smaller screens */
+            font-size: 14px; /* Slightly smaller font size */
+        }
+    }
+
+        .search-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Ensures content inside is centered */
+            justify-content: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            align-items: center;
+            display: block;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .card a {
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #6a2b8e, #8b3caf);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .card a:hover {
+            background: linear-gradient(90deg, #8b3caf, #6a2b8e);
+        }
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-top: 70px;
+            color: #333;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #6a2b8e, #c94dff);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <!-- Alumni Directory Box -->
+    <div class="directory-box">
+        <div class="hero">
+            <h1>Welcome to Alumni Directory</h1>
+            <p>Connect with your peers and explore career opportunities.</p>
+        </div>
+        <div class="categories">
+            <div class="category">
+                <span>{{ students_count }}</span>
+                <h3>Students</h3>
+            </div>
+         <!---   <div class="category">
+                <span>{{ companies_count }}</span>
+                <h3>Companies</h3>
+            </div>
+            <div class="category">
+                <span>{{ cities_count }}</span>
+                <h3>Cities</h3>
+            </div>-->
+        </div>
+    </div>
+    <div class="search-filters">
+        <form id="search-form" method="get" action="{% url 'alumni_directory' %}">
+            <div class="search-container">
+                <span class="search-icon">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    name="search" 
+                    placeholder="Search Alumni by Name, Degree, or Department..." 
+                    value="{{ search_query }}">
+            </div>
+        </form>
+    </div>
+    
+    
+
+    <div class="search-results">
+        {% if students %}
+            {% for student in students %}
+            <div class="card">
+                {% if student.profile.profile_photo %}
+                    <img src="{{ student.profile.profile_photo }}" alt="Profile Photo">
+                {% else %}
+                    <img src="https://res.cloudinary.com/dfowgh13y/image/upload/v1736879146/ixweh8lqbvl3y2igb0ua.jpg" alt="Default Profile Photo">
+        {% endif %}
+            <h3>{{ student.profile.first_name|default:'N/A' }} {{ student.profile.last_name|default:'N/A' }}</h3>
+            <p>{{ student.profile.degree|default:'N/A' }} - {{ student.profile.department|default:'N/A' }}</p>
+            <p>{{ student.profile.admissionYear|default:'N/A' }} - {{ student.profile.graduationYear|default:'N/A' }}</p>
+            <a href="{% url 'student_profile' student.id %}">View Profile</a>
+    
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No students found.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+   
+    
+    <script>
+        // Throttle function to delay form submission
+        let timeout = null;
+        const searchInput = document.getElementById('search-input');
+        const searchForm = document.getElementById('search-form');
+    
+        searchInput.addEventListener('input', function () {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                searchForm.submit();
+            }, 100); // Adjust delay as needed (500ms in this case)
+        });
+        
+    </script>
+{% endblock %}
+</body>
+
+</html>

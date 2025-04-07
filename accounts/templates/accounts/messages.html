@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { display: flex; height: 100vh; margin: 0; }
+        .sidebar { width: 25%; background: #f8f9fa; padding: 15px; overflow-y: auto; }
+        .chat-window { width: 75%; border-left: 1px solid #ddd; display: flex; flex-direction: column; }
+        .chat-header { background: #007bff; color: white; padding: 10px; text-align: center; }
+        .chat-body { flex-grow: 1; overflow-y: auto; padding: 15px; }
+        .chat-footer { padding: 10px; border-top: 1px solid #ddd; display: flex; }
+        .chat-footer input { flex-grow: 1; padding: 8px; margin-right: 10px; }
+        .message { padding: 10px; border-radius: 8px; margin: 5px 0; }
+        .sent { background: #007bff; color: white; align-self: flex-end; }
+        .received { background: #ddd; color: black; align-self: flex-start; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h4>Contacts</h4>
+        <ul id="contact-list">
+            <li onclick="openChat('user1')">John Doe</li>
+            <li onclick="openChat('user2')">Jane Smith</li>
+        </ul>
+    </div>
+
+    <div class="chat-window">
+        <div class="chat-header">Chat</div>
+        <div class="chat-body" id="chat-body">
+            {% for message in messages %}
+                <div class="message {% if message.sender == request.user.id %}sent{% else %}received{% endif %}">
+                    {{ message.text }}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            let message = document.getElementById("messageInput").value;
+            let chatBody = document.getElementById("chat-body");
+            let newMessage = document.createElement("div");
+            newMessage.classList.add("message", "sent");
+            newMessage.textContent = message;
+            chatBody.appendChild(newMessage);
+            document.getElementById("messageInput").value = "";
+        }
+    </script>
+</body>
+</html>

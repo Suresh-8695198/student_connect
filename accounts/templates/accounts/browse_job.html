@@ -1,0 +1,276 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block title %}Browse Jobs - Alumni Connect{% endblock %}
+
+{% block content %}
+<!-- FontAwesome & Google Fonts -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f9f9f9;
+    }
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 20px;
+    }
+    .title {
+        font-weight: 600;
+        color: #333;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    .search-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    #search-input {
+        width: 100%;
+        max-width: 500px;
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+    .job-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    .job-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+        text-align: left;
+        position: relative;
+    }
+    .job-card:hover {
+        transform: translateY(-5px);
+    }
+    .company-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        object-fit: cover;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+    .job-details {
+        margin-top: 10px;
+    }
+    .show-more-btn {
+        color: #4d2171;
+        cursor: pointer;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 10px;
+    }
+    .apply-btn {
+        display: block;
+        background: linear-gradient(90deg, #6a2b8e, #4d2171);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: 600;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+    .apply-btn:hover {
+        background: linear-gradient(90deg, #6a2b8e, #4d2171);
+    }
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-content {
+        background: white;
+        padding: 20px;
+        width: 50%;
+        border-radius: 10px;
+        text-align: left;
+        position: relative;
+    }
+    .close-modal {
+        color: red;
+        cursor: pointer;
+        font-size: 18px;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+    }
+    .posted-by {
+        font-size: 12px;
+        color: gray;
+        position: absolute;
+        right: 15px;
+        
+    }
+    .no-jobs-message {
+        text-align: center;
+        color: red;
+        font-weight: 600;
+        margin-top: 20px;
+    }
+    .directory-box .categories {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .directory-box .category {
+            flex: 1;
+            max-width: 200px;
+            padding: 20px;
+            background: linear-gradient(120deg, #6a2b8e, #c94dff);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1s ease;
+            cursor: pointer;
+        }
+        .directory-box .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .directory-box .category h3 {
+            margin: 10px 0 5px;
+        }
+
+        .directory-box .category span {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .hero {
+            text-align: center;
+            margin-top: 30px;
+            color: #333;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #6a2b8e, #c94dff);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #555;
+        }
+</style>
+
+<div class="container">
+<div class="directory-box">
+    <div class="hero">
+    <h1 class="title"> Browse Job Opportunities</h1>
+    </div>
+    <div class="categories">
+        <div class="category">
+            <span>{{ total_jobs }}</span>
+            <h3>Total Jobs</h3>
+        </div>
+    </div>
+</div>
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="🔍 Search Jobs, Location, Company Name...">
+    </div>
+
+    <div id="job-container" class="job-grid">
+        {% if jobs %}
+            {% for job in jobs %}
+            <div class="job-card">
+                {% if job.job_image %}
+                    <img src="{{ job.job_image }}" class="company-logo">
+                {% endif %}
+                <h3>{{ job.company_name }}</h3>
+                <p><strong>{{ job.title }}</strong></p>
+                <p><i class="fas fa-map-marker-alt"></i> {{ job.location }}</p>
+                <p><strong>Experience:</strong> {{ job.experience|default:"Fresher" }}</p>
+                <p><strong>Job Type:</strong> {{ job.job_type }}</p>
+                <p><strong>Deadline:</strong> {{ job.deadline }}</p>
+                <p><strong>Skills:</strong> {{ job.skills|default:"Not specified" }}</p>
+                <span class="show-more-btn" onclick="showModal('{{ job.title }}', '{{ job.description }}', '{{ job.company_name }}', '{{ job.location }}', '{{ job.skills }}')">Show More</span>
+                <a href="{{ job.company_url }}" target="_blank" class="apply-btn">Apply Now</a>
+                <p class="posted-by">Posted by: {{ job.posted_by }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-jobs-message">⚠ No jobs available at the moment.</p>
+        {% endif %}
+    </div>
+
+    <p id="no-results" class="no-jobs-message" style="display: none;">⚠ No matching jobs found.</p>
+</div>
+
+<!-- Modal -->
+<div id="job-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">✖</span>
+        <h2 id="modal-title"></h2>
+        <p><strong>Company:</strong> <span id="modal-company"></span></p>
+        <p><strong>Location:</strong> <span id="modal-location"></span></p>
+        <p><strong>Description:</strong> <span id="modal-description"></span></p>
+    </div>
+</div>
+
+<script>
+    function showModal(title, description, company, location, skills) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-description').innerText = description;
+        document.getElementById('modal-company').innerText = company;
+        document.getElementById('modal-location').innerText = location;
+        document.getElementById('job-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('job-modal').style.display = 'none';
+    }
+
+    // Search Filter Functionality
+    document.getElementById("search-input").addEventListener("input", function() {
+        let searchQuery = this.value.toLowerCase();
+        let jobCards = document.querySelectorAll(".job-card");
+        let jobContainer = document.getElementById("job-container");
+        let noResultsMessage = document.getElementById("no-results");
+
+        let found = false;
+
+        jobCards.forEach(card => {
+            let title = card.querySelector("h3").textContent.toLowerCase();
+            let company = card.querySelector("p:nth-of-type(1)").textContent.toLowerCase();
+            let location = card.querySelector("p:nth-of-type(2)").textContent.toLowerCase();
+            
+            if (title.includes(searchQuery) || company.includes(searchQuery) || location.includes(searchQuery)) {
+                card.style.display = "block";
+                found = true;
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        noResultsMessage.style.display = found ? "none" : "block";
+    });
+</script>
+
+{% endblock %}

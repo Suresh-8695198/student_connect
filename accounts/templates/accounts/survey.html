@@ -1,0 +1,161 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    .survey-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+    }
+    .survey-card {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .survey-card h3 {
+        color: #6a2b8e;
+        margin-bottom: 10px;
+    }
+    .survey-card .options {
+        margin-top: 10px;
+    }
+    .survey-card input {
+        margin-right: 10px;
+    }
+    .btn-submitted {
+        background: #28a745 !important;
+        color: white !important;
+        cursor: not-allowed;
+    }
+    .toast {
+        position: fixed;
+        top: 50px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        display: none;
+    }
+</style>
+
+<div class="survey-container">
+    <h2 class="text-center">Surveys</h2>
+    <div id="survey-list">
+        <p>Loading surveys...</p>
+    </div>
+</div>
+
+<div id="toast" class="toast">Response submitted successfully!</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetchSurveys();
+    });
+
+    function fetchSurveys() {
+        fetch("/get_surveys/")
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displaySurveys(data.surveys);
+                } else {
+                    document.getElementById("survey-list").innerHTML = `<p class="text-danger">Failed to load surveys.</p>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching surveys:", error);
+                document.getElementById("survey-list").innerHTML = `<p class="text-danger">Error loading surveys.</p>`;
+            });
+    }
+
+    function displaySurveys(surveys) {
+        const surveyList = document.getElementById("survey-list");
+        surveyList.innerHTML = "";
+
+        if (surveys.length === 0) {
+            surveyList.innerHTML = `<p>No surveys available.</p>`;
+            return;
+        }
+
+        surveys.forEach(survey => {
+            const surveyCard = document.createElement("div");
+            surveyCard.classList.add("survey-card");
+            surveyCard.id = `survey-${survey.id}`;
+            surveyCard.innerHTML = `
+                <h3>${survey.title}</h3>
+                <p>${survey.poll_question}</p>
+                <p><small>${survey.description}</small></p>
+                <form class="survey-form" data-survey-id="${survey.id}">
+                    <input type="hidden" name="survey_id" value="${survey.id}">
+                    <input type="hidden" name="student_doc_id" value="{{ student_doc_id }}">
+                    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+                    <div class="options">
+                        ${survey.options.map(option => `
+                            <label>
+                                <input type="radio" name="response" value="${option}" required> ${option}
+                            </label><br>
+                        `).join('')}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2 submit-btn">Submit Response</button>
+                </form>
+            `;
+            surveyList.appendChild(surveyCard);
+        });
+
+        document.querySelectorAll(".survey-form").forEach(form => {
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                submitResponse(event.target);
+            });
+        });
+    }
+
+    function submitResponse(form) {
+        const surveyId = form.getAttribute("data-survey-id");
+        const studentDocId = form.querySelector("input[name='student_doc_id']").value;
+        const responseValue = form.querySelector("input[name='response']:checked");
+        const csrfToken = document.getElementById("csrf-token").value;
+
+        if (!responseValue) {
+            alert("Please select an option.");
+            return;
+        }
+
+        const response = responseValue.value;
+
+        fetch("/submit-response/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({ survey_id: surveyId, response: response, student_doc_id: studentDocId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast("Response submitted successfully!");
+                form.innerHTML = `<p class="text-success">✅ You have already responded.</p>`;
+            } else {
+                alert(data.message || "Error submitting response.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while submitting your response.");
+        });
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.style.display = "block";
+        setTimeout(() => toast.style.display = "none", 3000);
+    }
+</script>
+{% endblock %}

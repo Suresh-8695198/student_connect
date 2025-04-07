@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with {{ recipient_name }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ecf0f1;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow:hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 105, 180, 0.3) 0%, rgba(147, 112, 219, 0.2) 50%, transparent 70%);
+            z-index: -1;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 90vh;
+            background: rgba(25, 15, 35, 0.97);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(147, 112, 219, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            scroll-behavior: smooth;
+            border: 3px solid rgba(255, 105, 180, 0.5);
+        }
+        .chat-header {
+            background: linear-gradient(90deg, #480363, #f13697);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.4);
+            font-family: 'Raleway', sans-serif;
+        }
+
+        .profile-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
+        }
+
+        .chat-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+
+     
+        .chat-box {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background: #ffffff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" fill="rgba(255, 105, 180, 0.1)"><circle cx="20" cy="20" r="5"/><circle cx="100" cy="100" r="5"/><path d="M60 50 L70 70 L50 70 Z" fill="rgba(147, 112, 219, 0.1)"/></svg>') repeat;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(147, 112, 219, 0.2); /* Subtle inner glow */
+}
+
+.chat-box {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background: #ffffff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="rgba(255, 105, 180, 0.1)"><circle cx="20" cy="20" r="5" fill="rgba(147, 112, 219, 0.1)"/><rect x="110" y="10" width="30" height="20" rx="3" fill="rgba(255, 105, 180, 0.1)"/><path d="M10 130 Q20 110 30 130" fill="none" stroke="rgba(147, 112, 219, 0.1)" stroke-width="2"/><path d="M70 70 L90 70 L80 90 Z" fill="rgba(255, 105, 180, 0.1)"/><rect x="110" y="110" width="20" height="20" rx="2" fill="rgba(147, 112, 219, 0.1)"/></svg>') repeat;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(147, 112, 219, 0.2); /* Subtle inner glow */
+}
+
+/* Overlay for additional depth */
+.chat-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.05) 0%, rgba(147, 112, 219, 0.05) 100%);
+    pointer-events: none; /* Prevents interference with interaction */
+    z-index: 0;
+}
+
+/* Ensure content stays above the overlay */
+.chat-box > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Scrollbar Styling */
+.chat-box::-webkit-scrollbar {
+    width: 10px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: linear-gradient(#ff69b4, #9b59b6);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+}
+
+.chat-box::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.8);
+}
+/* Message Actions Container */
+.message-actions {
+    position: absolute;
+    bottom: 5px; /* Aligns with timestamp */
+    right: 10px; /* Inside the message box */
+    display: flex;
+    gap: 8px; /* Space between buttons */
+    opacity: 0; /* Hidden by default */
+    visibility: hidden; /* Prevents interaction when hidden */
+}
+
+/* Show actions on message hover (only for sent messages) */
+.sent:hover .message-actions {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Common Button Styles */
+.message-actions button {
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white for contrast */
+    border: none;
+    border-radius: 50%; /* Circular buttons */
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px; /* Icon size */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Edit Button */
+.edit-btn {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.8), rgba(233, 30, 99, 0.8)); /* Matches sent gradient */
+}
+
+/* Delete Button */
+.delete-btn {
+    background: linear-gradient(135deg, rgba(255, 50, 50, 0.8), rgba(200, 0, 0, 0.8)); /* Reddish for delete */
+}
+
+/* Hover Effects for Buttons (optional, static design) */
+.edit-btn:hover {
+    background: linear-gradient(135deg, #ff69b4, #e91e63); /* Full opacity on hover */
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #ff3232, #c80000);
+}
+
+/* Ensure message content doesn’t overlap actions */
+.sent {
+    background: linear-gradient(135deg, #ff69b4, #e91e63);
+    align-self: flex-end;
+    margin-right: 15px;
+    position: relative;
+    padding: 12px 40px 12px 20px; /* Extra right padding for actions */
+    border-radius: 20px 5px 20px 20px;
+    max-width: 80%;
+    box-shadow: 0 3px 12px rgba(255, 105, 180, 0.3);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+
+
+/* Keep received unchanged */
+.received {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    align-self: flex-start;
+    margin-left: 15px;
+    position: relative;
+    padding: 12px 20px;
+    border-radius: 15px 15px 15px 5px;
+    max-width: 80%;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.received::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: inherit;
+    left: -5px;
+    bottom: 0;
+    transform: rotate(45deg);
+    z-index: -1;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+        .timestamp {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+            text-align: right;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-input {
+            padding: 25px;
+            background: rgba(30, 15, 45, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-top: 3px solid rgba(255, 105, 180, 0.5);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            background: rgba(50, 30, 70, 0.85);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-input button {
+            background: linear-gradient(135deg, #ff69b4, #9b59b6);
+            padding: 15px;
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.5);
+        }
+
+        /* Scrollbar Styling */
+        .chat-box::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background: linear-gradient(#ff69b4, #9b59b6);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+        }
+
+        .chat-box::-webkit-scrollbar-track {
+            background: rgba(50, 30, 70, 0.8);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+            .chat-header h2 {
+                font-size: 18px;
+            }
+            .chat-box {
+                padding: 15px;
+            }
+            .message {
+                max-width: 85%;
+            }
+        }
+        .back-button{
+            color: #fff;
+            font-size: 20px;
+            text-decoration: none;
+            
+        }
+        
+
+/* 🔹 Message Styling */
+.message {
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    position: relative;
+    max-width: 80%;
+}
+
+.sent {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.received {
+    background-color: #f1f1f1;
+    text-align: left;
+}
+
+/* 🔹 Timestamp */
+.timestamp {
+    font-size: 12px;
+    color: rgb(41, 38, 38);
+}
+
+/* 🔹 Message Actions */
+.message-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.edit-btn i {
+    color: blue;
+}
+
+.delete-btn i {
+    color: red;
+}
+
+/* 🔹 Delete Confirmation Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.modal-btn {
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.confirm {
+    background: linear-gradient(#ff69b4, #9b59b6);
+    color: white;
+}
+
+.cancel {
+    background-color: #ccc;
+}
+
+
+
+#emoji-btn {
+    font-size: 20px;
+    color: #ccc;
+    margin-right: 8px;
+}
+
+#emoji-picker {
+    position: absolute;
+    bottom: 50px;
+    left: 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    width: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    z-index: 1000;
+}
+
+#emoji-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.emoji {
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.emoji:hover {
+    transform: scale(1.2);
+}
+
+.hidden {
+    display: none !important;
+}
+.scroll-down {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #585b5e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+    .scroll-down.show {
+        display: block; /* Show button when needed */
+    }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <a href="javascript:history.back()" class="back-button"><i class="fas fa-arrow-left"></i></a>
+            <img src="{{ profile_photo }}" alt="Profile Photo" class="profile-photo">
+            <h2>{{ recipient_name }}</h2>
+            <div class="status-dot"></div>
+        </div>
+    <form id="csrf-form">
+        {% csrf_token %}
+    </form>
+  
+    
+<div class="chat-box" id="chat-box">
+    {% for msg in messages %}
+        <div class="message {% if msg.sender == current_user_email %}sent{% else %}received{% endif %}" 
+             id="message-{{ forloop.counter0 }}">
+            <p id="text-{{ forloop.counter0 }}">{{ msg.text }}</p>
+            <input type="text" id="edit-input-{{ forloop.counter0 }}" 
+                   class="edit-input" style="display: none;" value="{{ msg.text }}"/>
+            <span class="timestamp">{{ msg.timestamp }}</span>
+            {% if msg.sender == current_user_email %}
+                <div class="message-actions">
+                    <button class="edit-btn" onclick="enableEdit({{ forloop.counter0 }})">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="delete-btn" onclick="showDeleteModal({{ forloop.counter0 }}, '{{ recipient_email }}')">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <p>Are you sure you want to delete this message?</p>
+        <div class="modal-actions">
+            <button id="confirmDelete" class="modal-btn confirm">OK</button>
+            <button id="cancelDelete" class="modal-btn cancel">Cancel</button>
+        </div>
+    </div>
+</div>
+    
+    
+<button class="scroll-down" id="scroll-down">&#8595;</button>
+    
+    
+<div class="chat-input">
+    <button id="emoji-btn"><i class="fa fa-smile"></i></button>
+    <input type="text" id="message" placeholder="Type your message..." />
+    <button onclick="sendMessage()" id="send-btn"><i class="fa fa-paper-plane"></i></button>
+    <div id="emoji-picker" class="hidden">
+        <div id="emoji-container"></div>
+    </div>
+</div>
+
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const chatContainer = document.getElementById("chat-box"); // Ensure correct ID
+            const scrollDownBtn = document.getElementById("scroll-down");
+    
+            // Scroll to last chat message on page load
+            setTimeout(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 100); // Small delay ensures DOM is loaded
+    
+            // Show button when not at bottom
+            chatContainer.addEventListener("scroll", function () {
+                if (chatContainer.scrollHeight - chatContainer.scrollTop > chatContainer.clientHeight + 50) {
+                    scrollDownBtn.classList.add("show");
+                } else {
+                    scrollDownBtn.classList.remove("show");
+                }
+            });
+    
+            // Scroll down on button click
+            scrollDownBtn.addEventListener("click", function () {
+                chatContainer.scrollTo({
+                    top: chatContainer.scrollHeight,
+                    behavior: "smooth",
+                });
+            });
+        });
+    </script>
+<script>
+let editingIndex = null; 
+
+    function enableEdit(index) {
+        let textElement = document.getElementById(`text-${index}`);
+        let inputBox = document.getElementById("message");
+        let sendButton = document.getElementById("send-btn"); 
+    
+        if (!textElement || !inputBox || !sendButton) {
+            console.error(`Element not found for index: ${index}`);
+            return;
+        }
+    
+        // Set global editing index
+        editingIndex = index;
+    
+        // Prefill input box with existing message text
+        inputBox.value = textElement.innerText;
+    
+        // Change send button icon to save
+        sendButton.innerHTML = '<i class="fa fa-save"></i>';
+    }
+    
+    function sendMessage() {
+        let inputBox = document.getElementById("message");
+        let newText = inputBox.value.trim();
+        let sendButton = document.getElementById("send-btn");
+    
+        if (!newText) {
+            alert("Message cannot be empty!");
+            return;
+        }
+    
+        let csrfToken = document.querySelector("#csrf-form input[name='csrfmiddlewaretoken']").value;
+    
+        if (editingIndex !== null) {
+            let recipientEmail = "{{ recipient_email }}";
+    
+            fetch("/edit_message/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: `message_index=${encodeURIComponent(editingIndex)}&recipient_email=${encodeURIComponent(recipientEmail)}&new_text=${encodeURIComponent(newText)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let textElement = document.getElementById(`text-${editingIndex}`);
+                    textElement.innerText = newText;
+    
+                    inputBox.value = ""; // Clear input box
+                    editingIndex = null; // Reset editing mode
+                    sendButton.innerHTML = '<i class="fa fa-paper-plane"></i>'; // Restore send icon
+                } else {
+                    alert("Failed to edit message: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        } else {
+            fetch("/send_message/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: `sender_email={{ current_user_email }}&recipient_email={{ recipient_email }}&message=${encodeURIComponent(newText)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let chatBox = document.getElementById("chat-box");
+                    let newMessage = `
+                        <div class="message sent">
+                            <p>${newText}</p>
+                            <span class="timestamp">Just now</span>
+                        </div>`;
+                    chatBox.innerHTML += newMessage;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    inputBox.value = ""; // Clear input box
+                    sendButton.innerHTML = '<i class="fa fa-paper-plane"></i>'; // Restore send icon
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const emojiBtn = document.getElementById("emoji-btn");
+    const emojiPicker = document.getElementById("emoji-picker");
+    const emojiContainer = document.getElementById("emoji-container");
+    const inputBox = document.getElementById("message");
+    const sendButton = document.getElementById("send-btn");
+
+    const emojis = ["👋", "😀", "😂", "😍", "😎", "😜", "🤣", "😊", "😘", "🤝", "🤩", "👌", "😇", "😋", "🙃", "😏", "🤔", "🎁", "💖", "🔥", "👍", "👏", "🙏", "💯", "🎉", "🎶", "✌️", "😢", "😡", "🤯", "💪", "🧐", "🤗", "🙌", "🎓", "🏆", "🥇", "🥈", "🥉"];
+
+    emojiContainer.innerHTML = emojis.map(emoji => `<span class="emoji">${emoji}</span>`).join("");
+
+    emojiBtn.addEventListener("click", function (event) {
+        emojiPicker.classList.toggle("hidden");
+        event.stopPropagation();
+    });
+
+    emojiContainer.addEventListener("click", function (event) {
+        if (event.target.classList.contains("emoji")) {
+            inputBox.value += event.target.innerText;
+            emojiPicker.classList.add("hidden");
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!emojiBtn.contains(event.target) && !emojiPicker.contains(event.target)) {
+            emojiPicker.classList.add("hidden");
+        }
+    });
+
+    inputBox.addEventListener("input", () => {
+        if (editingIndex !== null) {
+            sendButton.innerHTML = '<i class="fa fa-save"></i>';
+        } else {
+            sendButton.innerHTML = '<i class="fa fa-paper-plane"></i>';
+        }
+    });
+});
+
+
+
+
+
+
+let deleteIndex = null;
+let deleteRecipient = null;
+
+function showDeleteModal(index, recipientEmail) {
+    deleteIndex = index;
+    deleteRecipient = recipientEmail;
+    document.getElementById("deleteModal").style.display = "flex";
+}
+
+document.getElementById("cancelDelete").addEventListener("click", function () {
+    document.getElementById("deleteModal").style.display = "none";
+});
+
+document.getElementById("confirmDelete").addEventListener("click", function () {
+    if (deleteIndex !== null) {
+        deleteMessage(deleteIndex, deleteRecipient);
+        document.getElementById("deleteModal").style.display = "none";
+    }
+});
+
+function deleteMessage(index, recipientEmail) {
+    console.log("Deleting message at index:", index);
+
+    if (index === undefined || index < 0) {
+        alert("Error: Invalid message index!");
+        return;
+    }
+
+    let csrfToken = document.querySelector("#csrf-form input[name='csrfmiddlewaretoken']").value;
+
+    fetch("/delete_message/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken
+        },
+        body: `message_index=${encodeURIComponent(index)}&recipient_email=${encodeURIComponent(recipientEmail)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Server Response:", data);
+        if (data.success) {
+            // Remove the message from the UI
+            const messageElement = document.getElementById(`message-${index}`);
+            if (messageElement) {
+                messageElement.remove();
+            }
+        } else {
+            alert("Failed to delete message: " + data.error);
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}
+
+
+
+    </script>
+</body>
+</html>

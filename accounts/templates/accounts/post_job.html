@@ -1,0 +1,251 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block title %}Post Job - Alumni Connect{% endblock %}
+
+{% block content %}
+<!-- External Fonts & Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<div class="container">
+    <div class="custom-container">
+        <h2 class="text-center title">🚀 Post a Job</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{ email }}">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="company_name">🏢 Company Name</label>
+                        <input type="text" id="company_name" name="company_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">📍 Location</label>
+                        <input type="text" id="location" name="location" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company_url">🌐 Company Website</label>
+                        <input type="url" id="company_url" name="company_url">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="job_id">🆔 Job ID</label>
+                        <input type="text" id="job_id" name="job_id" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="job_type">💼 Job Type</label>
+                        <select id="job_type" name="job_type" required>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Internship">Internship</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">📌 Job Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    
+
+                    <div class="form-group">
+                        <label for="description">📜 Job Description</label>
+                        <textarea id="description" name="description" rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience"> ⏳ Experience Required</label>
+                        <input type="text" id="experience" name="experience">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deadline">📅 Application Deadline</label>
+                        <input type="date" id="deadline" name="deadline" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="skills">🎯 Skills Required</label>
+                        <input type="text" id="skills" name="skills">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="job_image">📷 Upload Logo</label>
+                        <input type="file" id="job_image" name="job_image">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="custom-btn"><a href="{% if email %}{% url 'post_job' email=email %}{% else %}#{% endif %}">
+                🚀 Post Job </a></button>
+            
+            
+        </form>
+
+    </div>
+</div>
+
+<!-- Custom CSS for Modern UI/UX -->
+<style>
+    body {
+        background: linear-gradient(135deg, #e9e8eb, #c5cedf);
+        font-family: 'Poppins', sans-serif;
+        color: rgb(19, 17, 17);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin-top: 300px;
+    }
+
+    .custom-container {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 70px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .title {
+        color: #4d2171;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 20px;
+        animation: slideIn 1s ease-in-out;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        color: #141414;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255, 255, 255, 0.2);
+        color: #141414;
+        transition: all 0.3s ease-in-out;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .custom-btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        background: linear-gradient(to right, #06beb6, #48b1bf);
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+    }
+
+    .custom-btn:hover {
+        background: linear-gradient(to right, #48b1bf, #06beb6);
+        transform: scale(1.05);
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% if messages %}
+<div id="toast" class="toast-message">
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+</div>
+
+<script>
+    // Display toast message and remove after 3 seconds
+    setTimeout(function() {
+        var toast = document.getElementById("toast");
+        if (toast) {
+            toast.style.opacity = "0";
+            setTimeout(() => { toast.style.display = "none"; }, 500);
+        }
+    }, 3000);
+</script>
+
+<style>
+    .toast-message {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        font-size: 16px;
+        animation: fadeIn 0.5s ease-in-out;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endif %}
+
+
+{% endblock %}

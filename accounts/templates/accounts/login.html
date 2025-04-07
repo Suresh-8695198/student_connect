@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo&family=Oleo+Script+Swash+Caps&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Toastify/1.12.0/toastify.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #490173;
+        }
+
+        .container {
+            background-color: #fff;
+            width: 90%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .left-section {
+            background: linear-gradient(180deg, #370072 61%, #740092 97%, #92009A 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .left-section h1 {
+            font-size: 32px;
+            margin-bottom: 1rem;
+            font-family: 'Oleo Script Swash Caps', cursive;
+        }
+
+        .left-section p {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-family: Bai Jamjuree;
+        }
+
+        .left-section .icon {
+            font-size: 50px;
+            color: #fff;
+        }
+
+        .right-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            font-size: 32px;
+            margin-bottom: 1rem;
+            color: #490173;
+            font-family: 'Baloo', sans-serif;
+        }
+
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .login-container form input {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .login-container button {
+            background: #490173;
+            color: #fff;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 1rem auto;
+            display: block;
+            width: 50%;
+        }
+
+        .login-container button:hover {
+            background: #340053;
+            transform: scale(1.05);
+        }
+
+        .login-container .signup {
+            margin-top: 1rem;
+            font-size: 14px;
+            color: #490173;
+        }
+
+        .login-container .signup a {
+            color: #490173;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .login-container .signup a:hover {
+            text-decoration: underline;
+            color: #340053;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .left-section, .right-section {
+                padding: 1.5rem;
+            }
+
+            .left-section {
+                text-align: center;
+            }
+
+            .left-section h1 {
+                font-size: 28px;
+            }
+
+            .left-section p {
+                font-size: 18px;
+            }
+
+            .login-container h2 {
+                font-size: 28px;
+            }
+
+            .login-container button {
+                width: 70%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .left-section h1 {
+                font-size: 24px;
+            }
+
+            .left-section p {
+                font-size: 16px;
+            }
+
+            .login-container h2 {
+                font-size: 24px;
+            }
+
+            .login-container button {
+                width: 80%;
+            }
+        }
+        .alert {
+            padding: 15px;
+            background-color: #f44336;
+            color: white;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            text-align: center;
+            animation: fadeInOut 3s ease-in-out forwards;
+            width: 80%; /* Adjust width for better appearance */
+            max-width: 400px; /* Limit max width */
+        }
+
+        .alert.success {
+            background-color: #4CAF50;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -60%); }
+            10% { opacity: 1; transform: translate(-50%, -50%); }
+            90% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -60%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <h1>Welcome Back!</h1>
+            <p>Login to access exclusive content, job opportunities, and much more.</p>
+            <i class="icon fas fa-sign-in-alt"></i>
+        </div>
+        <div class="right-section">
+            <div class="login-container">
+                <h2>SIGN IN</h2>
+                 <!-- Display flash messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                <form method="post" action="/">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <div class="signup">
+                    Don’t have an account? <a href="{% url 'signup_view' %}">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Automatically display flash messages for 3 seconds
+        document.addEventListener("DOMContentLoaded", function () {
+            const alerts = document.querySelectorAll(".alert");
+            alerts.forEach(alert => {
+                alert.style.display = "block"; // Show the alert
+                setTimeout(() => {
+                    alert.style.display = "none"; // Hide after 3 seconds
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alumni Connect{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+</head>
+<style>
+ .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #6a2b8e;
+            padding: 10px 20px;
+            color: white;
+            z-index: 1000;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .navbar-left img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .navbar-left h1 {
+            font-size: 18px;
+            margin: 0;
+            color: white;
+        }
+
+        .navbar-center {
+            display: flex;
+            gap: 40px;
+        }
+
+        .navbar-center .dropdown {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .navbar-center .dropdown span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar-center .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .navbar-center .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            color: #333;
+            min-width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .navbar-center .dropdown-content a {
+            padding: 10px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .navbar-center .dropdown-content a:hover {
+            background-color: #f3f5f7;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-right: 20px;
+        }
+
+        .navbar-right .icon {
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .navbar-right .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .navbar-right .profile img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .navbar-right .profile span {
+            color: white;
+            font-size: 14px;
+        }
+
+        .sidebar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #6a2b8e;
+            color: white;
+            z-index: 2000;
+            overflow-y: auto;
+            padding-top: 20px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease, display 0.3s ease;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            padding: 10px 20px;
+            display: block;
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background-color: #4d2171;
+        }
+
+        .sidebar-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .sidebar-toggle {
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .navbar-center {
+                display: none;
+            }
+        }
+        .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(45deg, #ff4b2b, #ff416c);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.logout-btn i {
+    transition: transform 0.3s ease-in-out;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(45deg, #ff6a00, #ee0979);
+    transform: scale(1.05);
+    box-shadow: 0px 4px 15px rgba(255, 105, 135, 0.3);
+}
+
+.logout-btn:hover i {
+    transform: translateX(5px);
+}
+
+
+</style>
+<body>
+     <!-- Navbar -->
+     <div class="navbar">
+        <span class="sidebar-toggle" onclick="toggleSidebar()">☰</span>
+        <div class="navbar-left">
+            <img src="{% static 'login/Logo.png' %}" alt="Logo">
+            <h1>Alumni Connect</h1>
+        </div>
+        <div class="navbar-center">
+            <div class="dropdown">
+                <span>Alumni <i class="fas fa-chevron-down"></i></span>
+                <div class="dropdown-content">
+                    <a href="{% url 'alumni_directory' %}">Alumni Directory</a>
+                    
+                </div>
+            </div>
+            <div class="dropdown">
+                <span>Career <i class="fas fa-chevron-down"></i></span>
+                <div class="dropdown-content">
+                    <a href="{% url 'browse_job' %}">Browse Job</a>
+                    <a href="{% url 'post_job' email=email %}">Post Job</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <span>Updates <i class="fas fa-chevron-down"></i></span>
+                <div class="dropdown-content">
+                    <a href="{% url 'success_stories' %}">Success Story</a>
+                    <a href="{% url 'survey_list' %}">Survey</a>
+                    <a href="{% url 'newsletter' %}">Newsletter</a>
+                    <a href="{% url 'feedback' %}">Feedback</a>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-right">
+            {% if email %}
+                <a href="{% url 'profile_view' email=email %}">
+                    <div class="profile">
+                        {% if profile and profile.profile_photo %}
+                            <img src="{{ profile.profile_photo }}" alt="Profile Photo">
+                        {% else %}
+                            <img src="https://res.cloudinary.com/dfowgh13y/image/upload/v1736879146/ixweh8lqbvl3y2igb0ua.jpg" alt="Default Profile Photo">
+                        {% endif %}
+                        <span>
+                            {% if profile and profile.first_name and profile.last_name %}
+                                {{ profile.first_name }} {{ profile.last_name }}
+                            {% else %}
+                                Guest
+                            {% endif %}
+                        </span>
+                    </div>
+                </a>
+                <!-- Logout Button -->
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <span>Logout</span>
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+                
+            {% else %}
+                <div class="profile">
+                    <img src="https://res.cloudinary.com/dfowgh13y/image/upload/v1736879146/ixweh8lqbvl3y2igb0ua.jpg" alt="Default Profile Photo">
+                    <span>Guest</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        
+    </div>
+
+
+
+
+
+
+    <!-- Sidebar -->
+   <div class="sidebar" id="sidebar">
+    <span class="sidebar-close" onclick="toggleSidebar()">&times;</span>
+    <div class="has-submenu">
+        Alumni <i class="fas fa-chevron-down"></i>
+        <div class="submenu">
+            <a href="{% url 'alumni_directory' %}">Alumni Directory</a>
+            
+        </div>
+    </div>
+    <div class="has-submenu">
+        Career <i class="fas fa-chevron-down"></i>
+        <div class="submenu">
+            <a href="{% url 'browse_job' %}">Browse Job</a>
+            <a href="{% url 'post_job' email=email %}">Post Job</a>
+        </div>
+    </div>
+    <div class="has-submenu">
+        Updates <i class="fas fa-chevron-down"></i>
+        <div class="submenu">
+            <a href="{% url 'success_stories' %}">Success Story</a>
+            <a href="{% url 'survey_list' %}">Survey</a>
+            <a href="{% url 'newsletter' %}">Newsletter</a>
+            <a href="{% url 'feedback' %}">Feedback</a>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container mt-5">
+    
+    {% block content %}{% endblock %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('open'); // Toggle the 'open' class
+        if (sidebar.classList.contains('open')) {
+            sidebar.style.display = "block"; // Show the sidebar when open
+        } else {
+            sidebar.style.display = "none"; // Hide the sidebar when closed
+        }
+    }
+
+    document.querySelectorAll('.has-submenu').forEach(item => {
+        item.addEventListener('click', function () {
+            this.classList.toggle('active');
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiting for Approval</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            overflow: hidden;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #490173;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background-color: #340053;
+            color: white;
+        }
+
+        /* Message Box Styling */
+        .message-box {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1.5s ease-in-out;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .message-box h2 {
+            font-size: 28px;
+            color: #490173;
+            margin-bottom: 15px;
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+
+        .message-box p {
+            font-size: 18px;
+            color: #555;
+            animation: fadeInUp 2s ease-in-out;
+        }
+
+        .message-box .loading-icon {
+            font-size: 50px;
+            color: #490173;
+            margin: 20px 0;
+            animation: bounce 1.5s infinite;
+        }
+
+        .message-box .loading-text {
+            font-size: 16px;
+            color: #777;
+            animation: fadeInUp 2.5s ease-in-out;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Responsive Styling */
+        @media (max-width: 768px) {
+            .message-box {
+                width: 90%;
+            }
+            .message-box h2 {
+                font-size: 24px;
+            }
+            .message-box p {
+                font-size: 16px;
+            }
+            .message-box .loading-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back Button to Login Page (Styled as a Button) -->
+    <a href="{% url 'login' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+<!-- Message Box -->
+<div class="message-box" id="waiting-message" data-approved="{{ approved|yesno:'true,false' }}">
+    {% if approved %}
+        <h2>Congratulations!</h2>
+        <p>You have been approved. Redirecting to the login page...</p>
+    {% else %}
+        <h2 id="message-title">Waiting for Admin Approval</h2>
+        <div class="loading-icon" id="loading-icon">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <p id="message-text">Your request has been submitted. Please wait for the admin to approve your account.</p>
+    {% endif %}
+</div>
+
+<script>
+    const approved = document.getElementById('waiting-message').getAttribute('data-approved') === 'true';
+    if (approved) {
+        setTimeout(() => {
+            window.location.href = "{% url 'login' %}";
+        }, 5000); // Redirect after 5 seconds
+    }
+</script>
+
+</body>
+</html>
