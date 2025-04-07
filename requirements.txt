@@ -131,7 +131,6 @@ pillow==11.0.0
 pipenv==2024.4.0
 PyPDF2==3.0.1
 python-json-logger==3.2.1
-pywinpty==2.0.14
 referencing==0.35.1
 regex==2024.11.6
 reportlab==4.2.5
